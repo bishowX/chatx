@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef, useEffect } from "react"
-import { useChat } from "@ai-sdk/react"
-import { Sparkles, Settings, Trash2, Send, X, Menu, Plus } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { AnimatePresence, motion } from "framer-motion"
+import { useState, useRef, useEffect } from "react";
+import { useChat } from "@ai-sdk/react";
+import { Sparkles, Settings, Trash2, Send, X, Menu, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
 
 // Sample conversation for initial chat
 const sampleConversation = [
@@ -24,47 +24,47 @@ const sampleConversation = [
     content:
       "I'm glad it helped. To incorporate mindfulness into your daily life, try these simple practices:\n\n1. Start your day with a 5-minute meditation\n2. Take mindful breaks between tasks\n3. Practice mindful eating by savoring each bite\n4. End your day with a gratitude reflection\n\nRemember, consistency is more important than duration.",
   },
-]
+];
 
 export default function ZenChat() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [settingsOpen, setSettingsOpen] = useState(false)
-  const [theme, setTheme] = useState<"light" | "dark" | "system">("system")
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [activeChat, setActiveChat] = useState(1)
-  const [isLoading, setIsLoading] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [activeChat, setActiveChat] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [chats, setChats] = useState([
     { id: 1, title: "Morning Reflection", date: "Today", messages: sampleConversation },
     { id: 2, title: "Creative Ideas", date: "Yesterday", messages: [] },
     { id: 3, title: "Work Planning", date: "Yesterday", messages: [] },
     { id: 4, title: "Travel Inspiration", date: "Mar 2", messages: [] },
     { id: 5, title: "Book Recommendations", date: "Feb 28", messages: [] },
-  ])
+  ]);
 
   const { messages, input, handleInputChange, setMessages } = useChat({
     initialMessages: chats[0].messages,
-  })
+  });
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!input.trim()) return
+    e.preventDefault();
+    if (!input.trim()) return;
 
-    const userMessage = { id: String(Date.now()), role: "user", content: input }
-    const newMessages = [...messages, userMessage]
-    setMessages(newMessages)
-    saveChatHistory(activeChat, newMessages)
+    const userMessage = { id: String(Date.now()), role: "user", content: input };
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    saveChatHistory(activeChat, newMessages);
 
-    handleInputChange({ target: { value: "" } } as React.ChangeEvent<HTMLInputElement>)
+    handleInputChange({ target: { value: "" } } as React.ChangeEvent<HTMLInputElement>);
 
-    setIsLoading(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000))
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000));
 
-    const aiResponse = { id: String(Date.now() + 1), role: "assistant", content: generateFakeResponse(input) }
-    const updatedMessages = [...newMessages, aiResponse]
-    setMessages(updatedMessages)
-    saveChatHistory(activeChat, updatedMessages)
-    setIsLoading(false)
-  }
+    const aiResponse = { id: String(Date.now() + 1), role: "assistant", content: generateFakeResponse(input) };
+    const updatedMessages = [...newMessages, aiResponse];
+    setMessages(updatedMessages);
+    saveChatHistory(activeChat, updatedMessages);
+    setIsLoading(false);
+  };
 
   const generateFakeResponse = (userInput: string) => {
     const responses = [
@@ -78,36 +78,36 @@ export default function ZenChat() {
       "I'm glad you brought that up. It's important to consider various viewpoints on this subject.",
       "Your question touches on a fundamental aspect of personal growth. Let's delve deeper.",
       "That's an excellent point. It relates to several key principles we've discussed before.",
-    ]
-    return responses[Math.floor(Math.random() * responses.length)]
-  }
+    ];
+    return responses[Math.floor(Math.random() * responses.length)];
+  };
 
   const saveChatHistory = (chatId: number, newMessages: any[]) => {
-    setChats((prevChats) => prevChats.map((chat) => (chat.id === chatId ? { ...chat, messages: newMessages } : chat)))
-  }
+    setChats((prevChats) => prevChats.map((chat) => (chat.id === chatId ? { ...chat, messages: newMessages } : chat)));
+  };
 
   // Apply theme
   useEffect(() => {
-    const root = window.document.documentElement
-    root.classList.remove("light", "dark")
+    const root = window.document.documentElement;
+    root.classList.remove("light", "dark");
 
     if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-      root.classList.add(systemTheme)
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      root.classList.add(systemTheme);
     } else {
-      root.classList.add(theme)
+      root.classList.add(theme);
     }
-  }, [theme])
+  }, [theme]);
 
   // Auto scroll to bottom on new messages
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [])
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   const clearChat = () => {
-    setMessages([])
-    saveChatHistory(activeChat, [])
-  }
+    setMessages([]);
+    saveChatHistory(activeChat, []);
+  };
 
   const handleNewChat = () => {
     const newChat = {
@@ -115,19 +115,19 @@ export default function ZenChat() {
       title: `New Chat ${chats.length + 1}`,
       date: "Just now",
       messages: [],
-    }
-    setChats([newChat, ...chats])
-    setActiveChat(newChat.id)
-    setMessages([])
-  }
+    };
+    setChats([newChat, ...chats]);
+    setActiveChat(newChat.id);
+    setMessages([]);
+  };
 
   const handleChatSelect = (id: number) => {
-    setActiveChat(id)
-    const selectedChat = chats.find((chat) => chat.id === id)
+    setActiveChat(id);
+    const selectedChat = chats.find((chat) => chat.id === id);
     if (selectedChat) {
-      setMessages(selectedChat.messages)
+      setMessages(selectedChat.messages);
     }
-  }
+  };
 
   return (
     <div className="flex h-screen overflow-hidden bg-background text-foreground transition-colors duration-300">
@@ -171,7 +171,7 @@ export default function ZenChat() {
                     onClick={() => handleChatSelect(chat.id)}
                     className={cn(
                       "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors duration-200",
-                      activeChat === chat.id ? "bg-primary/10 text-primary" : "hover:bg-muted/50 text-foreground/80",
+                      activeChat === chat.id ? "bg-primary/10 text-primary" : "hover:bg-muted/50 text-foreground/80"
                     )}
                   >
                     <div className="flex items-center gap-2 overflow-hidden">
@@ -198,7 +198,7 @@ export default function ZenChat() {
 
       <motion.div
         className="flex-1 flex flex-col h-full relative"
-        animate={{ marginLeft: sidebarOpen ? 280 : 0 }}
+        animate={{ marginLeft: sidebarOpen ? 0 : 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
         {/* Header */}
@@ -250,7 +250,7 @@ export default function ZenChat() {
                     <div
                       className={cn(
                         "max-w-[80%] rounded-2xl px-4 py-3",
-                        message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted",
+                        message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
                       )}
                     >
                       <div className="whitespace-pre-line">{message.content}</div>
@@ -345,7 +345,7 @@ export default function ZenChat() {
                       onClick={() => setTheme(t)}
                       className={cn(
                         "px-3 py-1 rounded-md text-sm",
-                        theme === t ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80",
+                        theme === t ? "bg-primary text-primary-foreground" : "bg-muted hover:bg-muted/80"
                       )}
                     >
                       {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -358,6 +358,5 @@ export default function ZenChat() {
         </div>
       )}
     </div>
-  )
+  );
 }
-
